@@ -9,11 +9,6 @@
 <meta name="apple-mobile-web-app-title" content="Mi Agenda">
 <meta name="theme-color" content="#a8647a">
 <title>Mi Agenda</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" href="icon-192.png">
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -30,17 +25,26 @@
     color-scheme: dark;
   }
 }
+:root[data-theme="dark"]{
+  --bg:#211c2b; --card:#2b2334; --text:#f3e9eb; --text2:#c6b2b7;
+  --border:#453a3d; --accent:#e3aabb; --accent-dark:#f3dbe2; --accent-bg:#4a2c34;
+  --gold:#d6bb86; --ok:#a7c98a; --ok-bg:#2f3a22; --warn:#e0b26a; --warn-bg:#3e2f17;
+  color-scheme: dark;
+}
 *{box-sizing:border-box;}
 body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
 .wrap{max-width:740px;margin:0 auto;padding:24px 16px 48px;}
-.header{border-bottom:2px solid var(--gold);padding-bottom:12px;margin-bottom:20px;}
-h1{font-size:22px;font-weight:600;margin:0 0 4px;color:var(--accent-dark);letter-spacing:.3px;}
+.header{border-bottom:2px solid var(--gold);padding-bottom:12px;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+h1{font-size:22px;font-weight:600;margin:0;color:var(--accent-dark);letter-spacing:.3px;}
+.ver{font-size:11px;font-weight:500;color:var(--text2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;vertical-align:middle;}
 .sub{color:var(--text2);font-size:13px;margin:0;}
+.theme-btn{margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:7px 12px;font-size:13px;color:var(--text);flex-shrink:0;}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px;}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;}
 .stat .n{font-size:19px;font-weight:600;color:var(--accent-dark);}
 .stat .l{font-size:11.5px;color:var(--text2);}
+.badgeCount{position:absolute;top:-6px;right:-6px;background:var(--warn);color:#fff;font-size:11px;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px;}
 .card h2{font-size:15px;margin:0 0 12px;color:var(--accent-dark);}
 .toprow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
@@ -65,20 +69,40 @@ button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:1
 .actions{display:flex;gap:6px;flex-wrap:wrap;}
 .actions button{padding:5px 9px;font-size:12px;background:var(--bg);border:1px solid var(--border);color:var(--text);}
 .empty{color:var(--text2);font-size:13px;text-align:center;padding:16px 0;}
+#lock-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.lock-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;max-width:320px;width:100%;text-align:center;}
+.lock-card input{text-align:center;letter-spacing:6px;font-size:20px;padding:10px;margin-bottom:10px;}
+.lock-card button{width:100%;margin-top:4px;}
+.lock-err{color:var(--warn);font-size:12.5px;min-height:16px;margin-bottom:6px;}
+.lock-link{background:none;border:none;color:var(--text2);font-size:12px;text-decoration:underline;padding:6px;margin-top:8px;}
+#app{display:none;}
 </style>
 </head>
 <body>
+
+<div id="lock-overlay">
+  <div class="lock-card" id="lock-card"></div>
+</div>
+
+<div id="app">
 <div class="wrap">
-  <div class="header" style="display:flex;align-items:center;gap:12px;">
-    <svg width="38" height="38" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
-      <rect x="17" y="5" width="14" height="9" rx="2" fill="var(--gold)"/>
-      <path d="M15 14h18l-2.2 25a4 4 0 0 1-4 3.6h-5.6a4 4 0 0 1-4-3.6L15 14z" fill="var(--accent)"/>
-      <rect x="20" y="19" width="8" height="3" rx="1.5" fill="#fff" opacity="0.55"/>
+  <div class="header">
+    <svg width="38" height="46" viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+      <rect x="18" y="2" width="4" height="66" rx="2" fill="#1c1a1b"/>
+      <rect x="14" y="4" width="42" height="62" rx="7" fill="#201d1e" stroke="#c3a06a" stroke-width="2"/>
+      <rect x="21" y="26" width="26" height="4" rx="2" fill="#c3a06a"/>
+      <rect x="21" y="44" width="18" height="4" rx="2" fill="#c3a06a"/>
+      <circle cx="12" cy="12" r="3.4" fill="#f3ede3"/>
+      <circle cx="12" cy="24" r="3.4" fill="#f3ede3"/>
+      <circle cx="12" cy="36" r="3.4" fill="#f3ede3"/>
+      <circle cx="12" cy="48" r="3.4" fill="#f3ede3"/>
+      <circle cx="12" cy="60" r="3.4" fill="#f3ede3"/>
     </svg>
     <div>
-      <h1 style="margin:0">Mi Agenda <span style="font-size:11px;font-weight:500;color:var(--text2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;vertical-align:middle;">v1.3</span></h1>
-      <p class="sub" style="margin:0">Control de turnos, clientes e ingresos</p>
+      <h1>Mi Agenda <span class="ver">v1.4</span></h1>
+      <p class="sub">Control de turnos, clientes e ingresos</p>
     </div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTema()">🌙 Oscuro</button>
   </div>
 
   <div class="stats" id="stats"></div>
@@ -115,13 +139,115 @@ button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:1
       <button type="button" class="btn-cancel" id="btnCancel" style="display:none" onclick="cancelarEdicion()">Cancelar edición</button>
     </form>
   </div>
+
+  <div class="card">
+    <h2>Seguridad</h2>
+    <div id="seg-box"></div>
+  </div>
+</div>
 </div>
 
 <script>
 const KEY='turnos_manicura';
+const PINKEY='pin_mia';
+const TEMAKEY='tema_mia';
+const NOTIFKEY='notificados_mia';
 let turnos = JSON.parse(localStorage.getItem(KEY) || '[]');
 let confirmandoLimpiar = false;
 
+/* ---------- Tema ---------- */
+function aplicarTema(){
+  const t = localStorage.getItem(TEMAKEY);
+  if(t==='dark'){ document.documentElement.setAttribute('data-theme','dark'); document.getElementById('themeBtn').textContent='☀️ Claro'; }
+  else if(t==='light'){ document.documentElement.setAttribute('data-theme','light'); document.getElementById('themeBtn').textContent='🌙 Oscuro'; }
+  else { document.documentElement.removeAttribute('data-theme'); document.getElementById('themeBtn').textContent='🌓 Tema'; }
+}
+function toggleTema(){
+  const actual = localStorage.getItem(TEMAKEY);
+  const sistemaOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  let nuevo;
+  if(!actual) nuevo = sistemaOscuro ? 'light' : 'dark';
+  else if(actual==='dark') nuevo='light';
+  else nuevo='dark';
+  localStorage.setItem(TEMAKEY, nuevo);
+  aplicarTema();
+}
+aplicarTema();
+
+/* ---------- PIN / bloqueo ---------- */
+function bloquear(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('lock-overlay').style.display='flex';
+  pintarLock();
+}
+function pintarLock(){
+  const card = document.getElementById('lock-card');
+  card.innerHTML = `
+    <h2 style="margin-top:0">Mi Agenda</h2>
+    <p style="font-size:13px;color:var(--text2)">Ingresa tu contraseña</p>
+    <input id="pinEntrada" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+    <div class="lock-err" id="lockErr"></div>
+    <button class="btn-add" onclick="verificarPin()">Entrar</button>
+    <button class="lock-link" onclick="olvidePin()">Olvidé mi contraseña</button>
+  `;
+  document.getElementById('pinEntrada').addEventListener('keydown', e=>{ if(e.key==='Enter') verificarPin(); });
+}
+function crearPin(){
+  const p1 = document.getElementById('segPin1').value.trim();
+  const p2 = document.getElementById('segPin2').value.trim();
+  const err = document.getElementById('segErr');
+  if(!/^\d{4,6}$/.test(p1)){ err.textContent='Debe tener entre 4 y 6 números.'; return; }
+  if(p1!==p2){ err.textContent='Las contraseñas no coinciden.'; return; }
+  localStorage.setItem(PINKEY, p1);
+  pintarSeguridad();
+}
+function quitarPin(){
+  if(confirm('¿Quitar la contraseña de Mi Agenda?')){
+    localStorage.removeItem(PINKEY);
+    pintarSeguridad();
+  }
+}
+function pintarSeguridad(){
+  const pin = localStorage.getItem(PINKEY);
+  const box = document.getElementById('seg-box');
+  if(!pin){
+    box.innerHTML = `
+      <p style="font-size:13px;color:var(--text2);margin-top:0">La app no tiene contraseña. Actívala para protegerla con un código de 4 a 6 dígitos.</p>
+      <input id="segPin1" type="password" inputmode="numeric" maxlength="6" placeholder="Nueva contraseña" style="margin-bottom:8px">
+      <input id="segPin2" type="password" inputmode="numeric" maxlength="6" placeholder="Confirmar contraseña" style="margin-bottom:8px">
+      <div class="lock-err" id="segErr"></div>
+      <button class="btn-tool" onclick="crearPin()">Activar contraseña</button>
+    `;
+  } else {
+    box.innerHTML = `
+      <p style="font-size:13px;color:var(--text2);margin-top:0">La contraseña está activada.</p>
+      <button class="btn-tool" onclick="bloquear()">Bloquear ahora</button>
+      <button class="btn-danger" onclick="quitarPin()">Quitar contraseña</button>
+    `;
+  }
+}
+function verificarPin(){
+  const p = document.getElementById('pinEntrada').value.trim();
+  const err = document.getElementById('lockErr');
+  if(p === localStorage.getItem(PINKEY)){ desbloquear(); }
+  else { err.textContent='Contraseña incorrecta.'; }
+}
+function olvidePin(){
+  if(confirm('Esto borrará la contraseña (tus turnos NO se borran). ¿Continuar?')){
+    localStorage.removeItem(PINKEY);
+    pintarLock();
+  }
+}
+function desbloquear(){
+  document.getElementById('lock-overlay').style.display='none';
+  document.getElementById('app').style.display='block';
+  render();
+  pintarSeguridad();
+  pedirNotificaciones();
+}
+if(localStorage.getItem(PINKEY)){ pintarLock(); } else { desbloquear(); }
+
+/* ---------- Datos ---------- */
 function save(){ localStorage.setItem(KEY, JSON.stringify(turnos)); render(); }
 function money(n){ return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n); }
 function fmtFecha(f){ const [y,m,d]=f.split('-'); return `${d}/${m}/${y}`; }
@@ -134,7 +260,7 @@ function render(){
 
   document.getElementById('stats').innerHTML = `
     <div class="stat"><div class="n">${turnos.length}</div><div class="l">Clientes ingresados</div></div>
-    <div class="stat"><div class="n">${pendientes.length}</div><div class="l">Por agendar/atender</div></div>
+    <div class="stat">${pendientes.length?`<div class="badgeCount">${pendientes.length}</div>`:''}<div class="n">${pendientes.length}</div><div class="l">Por agendar/atender</div></div>
     <div class="stat"><div class="n">${atendidos.length}</div><div class="l">Atendidos</div></div>
     <div class="stat"><div class="n">${money(ingresos)}</div><div class="l">Ingresos</div></div>
   `;
@@ -169,6 +295,8 @@ function render(){
       </div>
     </div>
   `).join('');
+
+  checarNotificaciones(en48h);
 }
 
 function marcar(id){ turnos = turnos.map(t=> t.id===id ? {...t, estado:'atendido'} : t); save(); }
@@ -244,10 +372,27 @@ function exportarExcel(){
   XLSX.writeFile(wb, 'Mi_Agenda.xlsx');
 }
 
-render();
-</script>
-<script>
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+/* ---------- Notificaciones ---------- */
+function pedirNotificaciones(){
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+function checarNotificaciones(en48h){
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+  let notificados = JSON.parse(localStorage.getItem(NOTIFKEY) || '[]');
+  en48h.forEach(t=>{
+    if(!notificados.includes(t.id)){
+      new Notification('Turno pendiente - Mi Agenda', {
+        body: `${t.cliente} · ${t.servicio} · ${fmtFecha(t.fecha)} ${t.hora}`
+      });
+      notificados.push(t.id);
+    }
+  });
+  notificados = notificados.filter(id => turnos.some(t=>t.id===id));
+  localStorage.setItem(NOTIFKEY, JSON.stringify(notificados));
+}
+setInterval(()=>{ if(document.getElementById('app').style.display!=='none') render(); }, 5*60*1000);
 </script>
 </body>
 </html>
