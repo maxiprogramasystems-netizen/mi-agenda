@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi Agenda">
+<meta name="theme-color" content="#a8647a">
+<title>Mi Agenda</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#f3edf9; --card:#ffffff; --text:#2e2628; --text2:#8a7a7e;
+  --border:#ecdfe1; --accent:#a8647a; --accent-dark:#6b3747; --accent-bg:#f6e4e8;
+  --gold:#c3a06a; --ok:#577a3a; --ok-bg:#ecf1e3; --warn:#9a6a2a; --warn-bg:#faf0dd;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#211c2b; --card:#2b2334; --text:#f3e9eb; --text2:#c6b2b7;
+    --border:#453a3d; --accent:#e3aabb; --accent-dark:#f3dbe2; --accent-bg:#4a2c34;
+    --gold:#d6bb86; --ok:#a7c98a; --ok-bg:#2f3a22; --warn:#e0b26a; --warn-bg:#3e2f17;
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+.wrap{max-width:740px;margin:0 auto;padding:24px 16px 48px;}
+.header{border-bottom:2px solid var(--gold);padding-bottom:12px;margin-bottom:20px;}
+h1{font-size:22px;font-weight:600;margin:0 0 4px;color:var(--accent-dark);letter-spacing:.3px;}
+.sub{color:var(--text2);font-size:13px;margin:0;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.stat .n{font-size:19px;font-weight:600;color:var(--accent-dark);}
+.stat .l{font-size:11.5px;color:var(--text2);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px;}
+.card h2{font-size:15px;margin:0 0 12px;color:var(--accent-dark);}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.toolbtns{display:flex;gap:8px;flex-wrap:wrap;}
+form{display:grid;gap:10px;grid-template-columns:1fr 1fr;}
+form .full{grid-column:1/-1;}
+label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px;}
+input,select{width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;}
+button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:13.5px;font-weight:500;}
+.btn-add{background:#4d7c32;color:#fff;grid-column:1/-1;}
+.btn-cancel{background:var(--bg);border:1px solid var(--border);color:var(--text);grid-column:1/-1;}
+.btn-tool{background:var(--card);border:1px solid var(--border);color:var(--accent-dark);}
+.btn-danger{background:var(--card);border:1px solid var(--warn);color:var(--warn);}
+.reminder{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:8px 12px;font-size:13px;margin-bottom:6px;}
+.turno{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:10px 0;gap:8px;}
+.turno:last-child{border-bottom:none;}
+.turno .info b{font-size:14px;}
+.turno .info div{font-size:12px;color:var(--text2);}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+.badge.pendiente{background:var(--warn-bg);color:var(--warn);}
+.badge.atendido{background:var(--ok-bg);color:var(--ok);}
+.actions{display:flex;gap:6px;flex-wrap:wrap;}
+.actions button{padding:5px 9px;font-size:12px;background:var(--bg);border:1px solid var(--border);color:var(--text);}
+.empty{color:var(--text2);font-size:13px;text-align:center;padding:16px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header" style="display:flex;align-items:center;gap:12px;">
+    <svg width="38" height="38" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+      <rect x="17" y="5" width="14" height="9" rx="2" fill="var(--gold)"/>
+      <path d="M15 14h18l-2.2 25a4 4 0 0 1-4 3.6h-5.6a4 4 0 0 1-4-3.6L15 14z" fill="var(--accent)"/>
+      <rect x="20" y="19" width="8" height="3" rx="1.5" fill="#fff" opacity="0.55"/>
+    </svg>
+    <div>
+      <h1 style="margin:0">Mi Agenda <span style="font-size:11px;font-weight:500;color:var(--text2);border:1px solid var(--border);border-radius:20px;padding:2px 8px;vertical-align:middle;">v1.3</span></h1>
+      <p class="sub" style="margin:0">Control de turnos, clientes e ingresos</p>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="card" id="reminders-card" style="display:none">
+    <h2>Recordatorios</h2>
+    <div id="reminders"></div>
+  </div>
+
+  <div class="card">
+    <div class="toprow">
+      <h2 style="margin:0">Turnos</h2>
+      <div class="toolbtns">
+        <button class="btn-tool" onclick="exportarExcel()">Exportar a Excel</button>
+        <button class="btn-danger" id="btnLimpiar" onclick="limpiarTodo()">Limpiar datos</button>
+      </div>
+    </div>
+    <div id="lista"></div>
+  </div>
+
+  <div class="card">
+    <h2 id="form-title">Nuevo turno</h2>
+    <form id="form">
+      <input type="hidden" id="editId" value="">
+      <div><label>Cliente</label><input id="cliente" required placeholder="Nombre"></div>
+      <div><label>Servicio</label><input id="servicio" required placeholder="Ej. Manicure gel"></div>
+      <div><label>Fecha</label><input id="fecha" type="date" required></div>
+      <div><label>Hora</label><input id="hora" type="time" required></div>
+      <div><label>Costo</label><input id="costo" type="number" min="0" step="1000" required placeholder="0"></div>
+      <div><label>Estado</label>
+        <select id="estado"><option value="pendiente">Pendiente</option><option value="atendido">Atendido</option></select>
+      </div>
+      <button type="submit" class="btn-add" id="btnSubmit">Agregar turno</button>
+      <button type="button" class="btn-cancel" id="btnCancel" style="display:none" onclick="cancelarEdicion()">Cancelar edición</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const KEY='turnos_manicura';
+let turnos = JSON.parse(localStorage.getItem(KEY) || '[]');
+let confirmandoLimpiar = false;
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(turnos)); render(); }
+function money(n){ return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n); }
+function fmtFecha(f){ const [y,m,d]=f.split('-'); return `${d}/${m}/${y}`; }
+
+function render(){
+  turnos.sort((a,b)=> (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
+  const pendientes = turnos.filter(t=>t.estado==='pendiente');
+  const atendidos = turnos.filter(t=>t.estado==='atendido');
+  const ingresos = atendidos.reduce((s,t)=>s+Number(t.costo),0);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="n">${turnos.length}</div><div class="l">Clientes ingresados</div></div>
+    <div class="stat"><div class="n">${pendientes.length}</div><div class="l">Por agendar/atender</div></div>
+    <div class="stat"><div class="n">${atendidos.length}</div><div class="l">Atendidos</div></div>
+    <div class="stat"><div class="n">${money(ingresos)}</div><div class="l">Ingresos</div></div>
+  `;
+
+  const now = new Date();
+  const en48h = pendientes.filter(t=>{
+    const dt = new Date(t.fecha+'T'+t.hora);
+    const diffH = (dt-now)/3600000;
+    return diffH >= -1 && diffH <= 48;
+  });
+  const remCard = document.getElementById('reminders-card');
+  if(en48h.length){
+    remCard.style.display='block';
+    document.getElementById('reminders').innerHTML = en48h.map(t=>
+      `<div class="reminder">${t.cliente} · ${t.servicio} · ${fmtFecha(t.fecha)} ${t.hora}</div>`
+    ).join('');
+  } else { remCard.style.display='none'; }
+
+  const lista = document.getElementById('lista');
+  if(!turnos.length){ lista.innerHTML='<div class="empty">Aún no hay turnos registrados.</div>'; return; }
+  lista.innerHTML = turnos.map(t=>`
+    <div class="turno">
+      <div class="info">
+        <b>${t.cliente}</b> — ${t.servicio}
+        <div>${fmtFecha(t.fecha)} · ${t.hora} · ${money(t.costo)}</div>
+      </div>
+      <div class="actions">
+        <span class="badge ${t.estado}">${t.estado}</span>
+        <button onclick="editar('${t.id}')">Editar</button>
+        ${t.estado==='pendiente' ? `<button onclick="marcar('${t.id}')">Atendido</button>` : ''}
+        <button onclick="eliminar('${t.id}')">Eliminar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function marcar(id){ turnos = turnos.map(t=> t.id===id ? {...t, estado:'atendido'} : t); save(); }
+function eliminar(id){ turnos = turnos.filter(t=>t.id!==id); save(); }
+
+function editar(id){
+  const t = turnos.find(x=>x.id===id);
+  if(!t) return;
+  document.getElementById('editId').value = t.id;
+  document.getElementById('cliente').value = t.cliente;
+  document.getElementById('servicio').value = t.servicio;
+  document.getElementById('fecha').value = t.fecha;
+  document.getElementById('hora').value = t.hora;
+  document.getElementById('costo').value = t.costo;
+  document.getElementById('estado').value = t.estado;
+  document.getElementById('form-title').textContent = 'Editar turno';
+  document.getElementById('btnSubmit').textContent = 'Guardar cambios';
+  document.getElementById('btnCancel').style.display = 'inline-block';
+  document.getElementById('form').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelarEdicion(){
+  document.getElementById('form').reset();
+  document.getElementById('editId').value = '';
+  document.getElementById('form-title').textContent = 'Nuevo turno';
+  document.getElementById('btnSubmit').textContent = 'Agregar turno';
+  document.getElementById('btnCancel').style.display = 'none';
+}
+
+document.getElementById('form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('editId').value;
+  const cliente = document.getElementById('cliente').value.trim();
+  const servicio = document.getElementById('servicio').value.trim();
+  const fecha = document.getElementById('fecha').value;
+  const hora = document.getElementById('hora').value;
+  const costo = document.getElementById('costo').value;
+  const estado = document.getElementById('estado').value;
+  if(!cliente||!servicio||!fecha||!hora||costo===''){ return; }
+
+  if(id){
+    turnos = turnos.map(t=> t.id===id ? {...t, cliente, servicio, fecha, hora, costo:Number(costo), estado} : t);
+  } else {
+    turnos.push({id:Date.now().toString(), cliente, servicio, fecha, hora, costo:Number(costo), estado});
+  }
+  cancelarEdicion();
+  save();
+});
+
+function limpiarTodo(){
+  const btn = document.getElementById('btnLimpiar');
+  if(!confirmandoLimpiar){
+    confirmandoLimpiar = true;
+    btn.textContent = '¿Seguro? Confirmar';
+    setTimeout(()=>{ confirmandoLimpiar=false; btn.textContent='Limpiar datos'; }, 4000);
+    return;
+  }
+  turnos = [];
+  confirmandoLimpiar = false;
+  btn.textContent = 'Limpiar datos';
+  save();
+}
+
+function exportarExcel(){
+  const datos = turnos.map(t=>({
+    Cliente: t.cliente, Servicio: t.servicio, Fecha: fmtFecha(t.fecha),
+    Hora: t.hora, Costo: Number(t.costo), Estado: t.estado
+  }));
+  const ws = XLSX.utils.json_to_sheet(datos);
+  ws['!cols'] = [{wch:18},{wch:20},{wch:12},{wch:8},{wch:12},{wch:12}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Mi Agenda');
+  XLSX.writeFile(wb, 'Mi_Agenda.xlsx');
+}
+
+render();
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+</script>
+</body>
+</html>
