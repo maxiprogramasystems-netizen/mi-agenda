@@ -91,9 +91,13 @@ button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:1
   <div class="header">
     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFDUlEQVR4nO3dvY0bVxgF0GdDqSPH7kENqAQlTpwqVgOGKjDcgGKlSpy4BDXgHhQrUgFyNMCCS3Ln5/3M4z0nXoAE5955w3nDb0sBAAAAAAAAAHgYP41+A5e+fHr/Y/R7oK037z6eJnfD34jAM7IQw15Y8Lk0oghdX1DoWatXGX7u8SKlCD/b9MpL85YJPke1XA2argDCTw0tc9SsAMJPTa3y1KQAwk8LLXJVvQDCT0u181W1AMJPDzVzVq0Awk9PtfJWpQDCzwg1cne4AMLPSEfz120nGM7oUAGc/TmDIzncvcU8Ovx//PnPyJfnis9//z709fc8MvGqxRtpQeDP7/IYjS7EGqcvgODPazl2Zy7CpiXj+7evzy57/vv3r3rv5gnBfzw9irD1MmjVH18L/qWaRRD+x9W6BFsL8OJdoDXhL6WU128/bHndm4T/sbU+vltvztxty9rwP7V3JRD8PK1Wgy2rwM0VYE/4S9m3Egh/pjMcdzvBRLtagL1n/8WWVeAMZwHGaXH8t3wPGLoCCD+ljM3BsAIIP0+NyoPvAEQbUgBnf64ZkYurBfjl198ODSJq9XgE1NZ9BXD2557e+bhZgL2rgLM/M7m7AmwtgfAzmxcvgdaWQPiZUdffA7j+Z62jD8qtfSBu0y/CnOV5NDbCiKYARFMAoikA0RSAaApANAUgmgIQTQGIpgBEUwCibXoW6Nq4E88HMbNVBbg3J2gphSIwo9MNx4We7hZg64Q4JWA2pxiOC6O4C0S04cNxYSQrANEUgGgKQDQFIJrhuESzAhDNcFyiGY5LNMNxibbqceilBEeH48LZGI5LNHeBiKYARFMAoikA0RSAaApANAUgmgIQTQGItmkn+KyO/k9Z9pv9fz9PXQDBH285BrMWwXBcoq36DvD929cft2YFvX77YcgcIGf/c5n1eBiOSzTDcYk27XDcWb90PapZj4d9AKJdvQtUYzhuj7tDy1ln1i9gj2DWM/9i6n2AxewHgXFcAhFNAYimAEQzHJdoVgCiGY5LNMNxiWY4LtEMxyWa4bhEcxeIaApANAUgmgIQTQGIpgBEUwCiKQDRFIBoD/GbYD+Kv89vpm+bugCCv87sA2xbMhyXaIbjBvGZPWc4LtEMxyWa4bhBfGbP2QcgmuG4AZz5b5t6H2DhALOXSyCiKQDRFIBohuMSzQpANMNxiWY4LtEMxyWa4bhEMxyXaO4CEU0BiKYARFMAoikA0RSAaApANAUgmgIQTQGIpgBEMxyXaKsedV4zJ2htEYww4SU15jy9efdxVbYNxyWa4bhEm3Y4LtTQ/S6QOZ7c0zsfVwtQYzguzGDIPoBVgGtG5MJGGNGGFcAqwFOj8jB0BVACShmbg+HDcZUgW4vjv3YXuBTfAQh3iuG4VoFMZzjuL4Z8y55AjSdDPSz3+FoHv+olUO/huGc4K9DOmcJfysrHoRc9h+NaCR5Pj5Nb0wI89eXT+0OPS6ylCPPrtapvDX8pE/yf4OXDU4T5zHA5e/oCLC4/TIU4nxkCf+nQhlevyyB4yZ7Ln1IOboTtfVGo6UgO7QQT7XABrAKMdDR/VVYAJWCEGrmrdgmkBPRUK29VvwMoAT3UzFn1L8FKQEu189XkLpAS0EKLXDW7DaoE1NQqT033AZSAGlrmqFtAPTbBVj1OoN12gq0GbNErL8NCaUXg0oiT5PCzsiIw8upgeAEuKcTjczkMAAAAAAAAQDv/A+S7AYbfB3wXAAAAAElFTkSuQmCC" width="42" height="42" alt="" style="flex-shrink:0;border-radius:10px">
     <div>
-      <h1>Mi Agenda <span class="ver">v1.5</span></h1>
+      <h1>Mi Agenda <span class="ver">v1.6</span></h1>
       <p class="sub">Control de turnos, clientes e ingresos</p>
     </div>
+    <select id="formatoHora" class="theme-btn" style="padding:7px 8px" onchange="guardarFormato()">
+      <option value="24">24 horas</option>
+      <option value="12">12 horas (AM/PM)</option>
+    </select>
     <button class="theme-btn" id="themeBtn" onclick="toggleTema()">🌙 Oscuro</button>
   </div>
 
@@ -123,7 +127,7 @@ button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:1
       <div><label>Servicio</label><input id="servicio" required placeholder="Ej. Manicure gel"></div>
       <div><label>Fecha</label><input id="fecha" type="date" required></div>
       <div><label>Hora</label><input id="hora" type="time" required></div>
-      <div><label>Costo</label><input id="costo" type="number" min="0" step="1000" required placeholder="0"></div>
+      <div><label>Costo (editable, puedes dejarlo en blanco por ahora)</label><input id="costo" type="number" min="0" step="1000" placeholder="Aún no definido"></div>
       <div><label>Estado</label>
         <select id="estado"><option value="pendiente">Pendiente</option><option value="atendido">Atendido</option></select>
       </div>
@@ -146,6 +150,7 @@ const TEMAKEY='tema_mia';
 const NOTIFKEY='notificados_mia';
 const TIPOKEY='tipo_pin_mia';
 const BIOKEY='bio_mia';
+const FORMATOKEY='formato_hora_mia';
 let turnos = JSON.parse(localStorage.getItem(KEY) || '[]');
 let confirmandoLimpiar = false;
 
@@ -167,6 +172,7 @@ function toggleTema(){
   aplicarTema();
 }
 aplicarTema();
+aplicarFormato();
 
 /* ---------- PIN / bloqueo ---------- */
 function bloquear(){
@@ -251,11 +257,19 @@ async function usarBiometria(){
   }
 }
 function quitarBiometria(){ localStorage.removeItem(BIOKEY); pintarSeguridad(); }
+let confirmandoQuitarPin = false;
 function quitarPin(){
-  if(confirm('¿Quitar la contraseña de Mi Agenda?')){
-    localStorage.removeItem(PINKEY);
-    pintarSeguridad();
+  if(!confirmandoQuitarPin){
+    confirmandoQuitarPin = true;
+    const btn = document.getElementById('btnQuitarPin');
+    if(btn) btn.textContent = '¿Seguro? Confirmar';
+    setTimeout(()=>{ confirmandoQuitarPin=false; if(btn) btn.textContent='Quitar contraseña'; }, 4000);
+    return;
   }
+  confirmandoQuitarPin = false;
+  localStorage.removeItem(PINKEY);
+  localStorage.removeItem(TIPOKEY);
+  pintarSeguridad();
 }
 function pintarSeguridad(){
   const pin = localStorage.getItem(PINKEY);
@@ -280,7 +294,7 @@ function pintarSeguridad(){
     html += `
       <p style="font-size:13px;color:var(--text2);margin-top:0">Contraseña activada (${tipo==='numeric'?'numérica':'alfanumérica'}).</p>
       <button class="btn-tool" onclick="bloquear()">Bloquear ahora</button>
-      <button class="btn-danger" onclick="quitarPin()">Quitar contraseña</button>
+      <button class="btn-danger" id="btnQuitarPin" onclick="quitarPin()">Quitar contraseña</button>
     `;
   }
   html += '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0">';
@@ -318,6 +332,21 @@ if(localStorage.getItem(PINKEY)){ pintarLock(); } else { desbloquear(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(turnos)); render(); }
 function money(n){ return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n); }
 function fmtFecha(f){ const [y,m,d]=f.split('-'); return `${d}/${m}/${y}`; }
+function fmtHora(h){
+  const formato = localStorage.getItem(FORMATOKEY) || '24';
+  if(formato==='24') return h;
+  let [hh,mm] = h.split(':').map(Number);
+  const ampm = hh>=12 ? 'p.m.' : 'a.m.';
+  hh = hh % 12; if(hh===0) hh = 12;
+  return `${hh}:${String(mm).padStart(2,'0')} ${ampm}`;
+}
+function guardarFormato(){
+  localStorage.setItem(FORMATOKEY, document.getElementById('formatoHora').value);
+  render();
+}
+function aplicarFormato(){
+  document.getElementById('formatoHora').value = localStorage.getItem(FORMATOKEY) || '24';
+}
 
 function render(){
   turnos.sort((a,b)=> (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
@@ -342,7 +371,7 @@ function render(){
   if(en48h.length){
     remCard.style.display='block';
     document.getElementById('reminders').innerHTML = en48h.map(t=>
-      `<div class="reminder">${t.cliente} · ${t.servicio} · ${fmtFecha(t.fecha)} ${t.hora}</div>`
+      `<div class="reminder">${t.cliente} · ${t.servicio} · ${fmtFecha(t.fecha)} ${fmtHora(t.hora)}</div>`
     ).join('');
   } else { remCard.style.display='none'; }
 
@@ -352,7 +381,7 @@ function render(){
     <div class="turno">
       <div class="info">
         <b>${t.cliente}</b> — ${t.servicio}
-        <div>${fmtFecha(t.fecha)} · ${t.hora} · ${money(t.costo)}</div>
+        <div>${fmtFecha(t.fecha)} · ${fmtHora(t.hora)} · ${t.costo ? money(t.costo) : 'Costo pendiente'}</div>
       </div>
       <div class="actions">
         <span class="badge ${t.estado}">${t.estado}</span>
@@ -400,14 +429,15 @@ document.getElementById('form').addEventListener('submit', e=>{
   const servicio = document.getElementById('servicio').value.trim();
   const fecha = document.getElementById('fecha').value;
   const hora = document.getElementById('hora').value;
-  const costo = document.getElementById('costo').value;
+  const costoRaw = document.getElementById('costo').value;
+  const costo = costoRaw === '' ? 0 : Number(costoRaw);
   const estado = document.getElementById('estado').value;
-  if(!cliente||!servicio||!fecha||!hora||costo===''){ return; }
+  if(!cliente||!servicio||!fecha||!hora){ return; }
 
   if(id){
-    turnos = turnos.map(t=> t.id===id ? {...t, cliente, servicio, fecha, hora, costo:Number(costo), estado} : t);
+    turnos = turnos.map(t=> t.id===id ? {...t, cliente, servicio, fecha, hora, costo, estado} : t);
   } else {
-    turnos.push({id:Date.now().toString(), cliente, servicio, fecha, hora, costo:Number(costo), estado});
+    turnos.push({id:Date.now().toString(), cliente, servicio, fecha, hora, costo, estado});
   }
   cancelarEdicion();
   save();
@@ -451,7 +481,7 @@ function checarNotificaciones(en48h){
   en48h.forEach(t=>{
     if(!notificados.includes(t.id)){
       new Notification('Turno pendiente - Mi Agenda', {
-        body: `${t.cliente} · ${t.servicio} · ${fmtFecha(t.fecha)} ${t.hora}`
+        body: `${t.cliente} · ${t.servicio} · ${fmtFecha(t.fecha)} ${fmtHora(t.hora)}`
       });
       notificados.push(t.id);
     }
