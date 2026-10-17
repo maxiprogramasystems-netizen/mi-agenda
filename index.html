@@ -91,7 +91,7 @@ button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:1
   <div class="header">
     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFDUlEQVR4nO3dvY0bVxgF0GdDqSPH7kENqAQlTpwqVgOGKjDcgGKlSpy4BDXgHhQrUgFyNMCCS3Ln5/3M4z0nXoAE5955w3nDb0sBAAAAAAAAAHgYP41+A5e+fHr/Y/R7oK037z6eJnfD34jAM7IQw15Y8Lk0oghdX1DoWatXGX7u8SKlCD/b9MpL85YJPke1XA2argDCTw0tc9SsAMJPTa3y1KQAwk8LLXJVvQDCT0u181W1AMJPDzVzVq0Awk9PtfJWpQDCzwg1cne4AMLPSEfz120nGM7oUAGc/TmDIzncvcU8Ovx//PnPyJfnis9//z709fc8MvGqxRtpQeDP7/IYjS7EGqcvgODPazl2Zy7CpiXj+7evzy57/vv3r3rv5gnBfzw9irD1MmjVH18L/qWaRRD+x9W6BFsL8OJdoDXhL6WU128/bHndm4T/sbU+vltvztxty9rwP7V3JRD8PK1Wgy2rwM0VYE/4S9m3Egh/pjMcdzvBRLtagL1n/8WWVeAMZwHGaXH8t3wPGLoCCD+ljM3BsAIIP0+NyoPvAEQbUgBnf64ZkYurBfjl198ODSJq9XgE1NZ9BXD2557e+bhZgL2rgLM/M7m7AmwtgfAzmxcvgdaWQPiZUdffA7j+Z62jD8qtfSBu0y/CnOV5NDbCiKYARFMAoikA0RSAaApANAUgmgIQTQGIpgBEUwCibXoW6Nq4E88HMbNVBbg3J2gphSIwo9MNx4We7hZg64Q4JWA2pxiOC6O4C0S04cNxYSQrANEUgGgKQDQFIJrhuESzAhDNcFyiGY5LNMNxibbqceilBEeH48LZGI5LNHeBiKYARFMAoikA0RSAaApANAUgmgIQTQGItmkn+KyO/k9Z9pv9fz9PXQDBH285BrMWwXBcoq36DvD929cft2YFvX77YcgcIGf/c5n1eBiOSzTDcYk27XDcWb90PapZj4d9AKJdvQtUYzhuj7tDy1ln1i9gj2DWM/9i6n2AxewHgXFcAhFNAYimAEQzHJdoVgCiGY5LNMNxiWY4LtEMxyWa4bhEcxeIaApANAUgmgIQTQGIpgBEUwCiKQDRFIBoD/GbYD+Kv89vpm+bugCCv87sA2xbMhyXaIbjBvGZPWc4LtEMxyWa4bhBfGbP2QcgmuG4AZz5b5t6H2DhALOXSyCiKQDRFIBohuMSzQpANMNxiWY4LtEMxyWa4bhEMxyXaO4CEU0BiKYARFMAoikA0RSAaApANAUgmgIQTQGIpgBEMxyXaKsedV4zJ2htEYww4SU15jy9efdxVbYNxyWa4bhEm3Y4LtTQ/S6QOZ7c0zsfVwtQYzguzGDIPoBVgGtG5MJGGNGGFcAqwFOj8jB0BVACShmbg+HDcZUgW4vjv3YXuBTfAQh3iuG4VoFMZzjuL4Z8y55AjSdDPSz3+FoHv+olUO/huGc4K9DOmcJfysrHoRc9h+NaCR5Pj5Nb0wI89eXT+0OPS6ylCPPrtapvDX8pE/yf4OXDU4T5zHA5e/oCLC4/TIU4nxkCf+nQhlevyyB4yZ7Ln1IOboTtfVGo6UgO7QQT7XABrAKMdDR/VVYAJWCEGrmrdgmkBPRUK29VvwMoAT3UzFn1L8FKQEu189XkLpAS0EKLXDW7DaoE1NQqT033AZSAGlrmqFtAPTbBVj1OoN12gq0GbNErL8NCaUXg0oiT5PCzsiIw8upgeAEuKcTjczkMAAAAAAAAQDv/A+S7AYbfB3wXAAAAAElFTkSuQmCC" width="42" height="42" alt="" style="flex-shrink:0;border-radius:10px">
     <div>
-      <h1>Mi Agenda <span class="ver">v1.8</span></h1>
+      <h1>Mi Agenda <span class="ver">v1.9</span></h1>
       <p class="sub">Control de turnos, clientes e ingresos</p>
     </div>
     <button class="theme-btn" id="themeBtn" onclick="toggleTema()">🌙 Oscuro</button>
@@ -353,7 +353,6 @@ function aplicarFormato(){
 }
 
 function render(){
-  turnos.sort((a,b)=> (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
   const pendientes = turnos.filter(t=>t.estado==='pendiente');
   const atendidos = turnos.filter(t=>t.estado==='atendido');
   const ingresos = atendidos.reduce((s,t)=>s+Number(t.costo),0);
